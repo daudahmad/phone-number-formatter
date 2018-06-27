@@ -2,7 +2,7 @@ const express = require("express");
 const request = require("request");
 const libphonenumber = require("libphonenumber-js");
 const app = express();
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 const ipStackAccessKey = "7753621da6f9525de5242d736aa995ee";
 
 // respond with "hello world" when a GET request is made to the homepage
@@ -15,7 +15,7 @@ app.get("/api/formatPhoneNumber", function(req, res) {
   console.log(req.ip);
   let number = req.query.number;
   let countryCode = req.query.country_code;
-  let ip = req.query.ip;
+  //   let ip = req.query.ip;
   let formattedNumber = "";
 
   if (number === undefined) {
@@ -24,6 +24,8 @@ app.get("/api/formatPhoneNumber", function(req, res) {
 
   // Country code not provided by API user
   if (countryCode === undefined) {
+    const ip = req.headers["x-forwarded-for"];
+    console.log(`x-forwarded-for: ${ip}`);
     countryCode = lookupCountryCode(ip);
     console.log(`Country code looked up: ${countryCode}`);
     if (countryCode === undefined) {
@@ -48,6 +50,10 @@ app.get("/api/formatPhoneNumber", function(req, res) {
 app.use(function(err, req, res, next) {
   console.error(err.stack);
   res.status(500).send("There was an error!");
+});
+
+app.use(function(req, res) {
+  res.send(404);
 });
 
 app.listen(PORT, () =>
