@@ -32,6 +32,7 @@ app.get("/api/formatPhoneNumber", function(req, res) {
       function(error, response, body) {
         if (!error && response.statusCode == 200) {
           console.log(body);
+          console.log(body.country_code);
           countryCode = body.country_code;
           console.log(`Country code looked up: ${countryCode}`);
           if (countryCode === undefined) {
