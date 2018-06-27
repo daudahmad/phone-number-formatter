@@ -26,24 +26,34 @@ app.get("/api/formatPhoneNumber", function(req, res) {
   if (countryCode === undefined) {
     const ip = req.headers["x-forwarded-for"];
     console.log(`x-forwarded-for: ${ip}`);
-    countryCode = lookupCountryCode(ip);
-    console.log(`Country code looked up: ${countryCode}`);
-    if (countryCode === undefined) {
-      res.json({ error: "country code could not be determined" });
-    }
-  }
-
-  try {
-    // console.log(countryCode);
-    formattedNumber = libphonenumber.formatNumber(
-      number,
-      countryCode,
-      "International"
+    // countryCode = lookupCountryCode(ip);
+    request(
+      `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`,
+      function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log(body);
+          countryCode = body.country_code;
+          console.log(`Country code looked up: ${countryCode}`);
+          if (countryCode === undefined) {
+            res.json({ error: "country code could not be determined" });
+          } else {
+            try {
+              formattedNumber = libphonenumber.formatNumber(
+                number,
+                countryCode,
+                "International"
+              );
+              res.json({ formatted_number: formattedNumber });
+            } catch (error) {
+              console.error(error);
+              res.json({ error: "invalid number" });
+            }
+          }
+        } else {
+          res.json({ error: "country code could not be determined" });
+        }
+      }
     );
-    res.json({ formatted_number: formattedNumber });
-  } catch (error) {
-    console.error(error);
-    res.json({ error: "invalid number" });
   }
 });
 
@@ -61,9 +71,9 @@ app.listen(PORT, () =>
 );
 
 function lookupCountryCode(ip) {
-  console.log(
-    `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`
-  );
+  //   console.log(
+  //     `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`
+  //   );
   request(
     `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`,
     function(error, response, body) {
