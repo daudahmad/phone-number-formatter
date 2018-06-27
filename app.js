@@ -61,11 +61,14 @@ app.listen(PORT, () =>
 );
 
 function lookupCountryCode(ip) {
+  console.log(
+    `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`
+  );
   request(
     `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`,
     function(error, response, body) {
       if (!error && response.statusCode == 200) {
-        // console.log(body.country_code);
+        console.log(body);
         countryCode = body.country_code;
         return countryCode;
       } else {
