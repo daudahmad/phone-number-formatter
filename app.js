@@ -25,15 +25,14 @@ app.get("/api/formatPhoneNumber", function(req, res) {
   // Country code not provided by API user
   if (countryCode === undefined) {
     const ip = req.headers["x-forwarded-for"];
+    // const ip = "203.214.65.84";
     console.log(`x-forwarded-for: ${ip}`);
-    // countryCode = lookupCountryCode(ip);
     request(
       `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`,
       function(error, response, body) {
         if (!error && response.statusCode == 200) {
-          console.log(body);
-          console.log(body.country_code);
-          countryCode = body.country_code;
+          const info = JSON.parse(body);
+          countryCode = info.country_code;
           console.log(`Country code looked up: ${countryCode}`);
           if (countryCode === undefined) {
             res.json({ error: "country code could not be determined" });
@@ -70,21 +69,3 @@ app.use(function(req, res) {
 app.listen(PORT, () =>
   console.log(`phone formatter app listening on port ${PORT}`)
 );
-
-function lookupCountryCode(ip) {
-  //   console.log(
-  //     `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`
-  //   );
-  request(
-    `http://api.ipstack.com/${ip}?access_key=${ipStackAccessKey}&format=1`,
-    function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        console.log(body);
-        countryCode = body.country_code;
-        return countryCode;
-      } else {
-        return undefined;
-      }
-    }
-  );
-}
