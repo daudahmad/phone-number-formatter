@@ -43,7 +43,8 @@ app.get("/api/formatPhoneNumber", function(req, res) {
                 countryCode,
                 "International"
               );
-              res.json({ formatted_number: formattedNumber });
+              let valid = libphonenumber.isValidNumber(formattedNumber, countryCode);
+              res.json({ formatted_number: formattedNumber, valid: valid });
             } catch (error) {
               console.error(error);
               res.json({ error: "invalid number" });
