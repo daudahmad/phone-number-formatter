@@ -58,7 +58,7 @@ describe("API endpoint /api/formatPhoneNumber", () => {
       .get(`/api/formatphonenumber?number=5127364514&country_code=${incorrectCountryCode}`)
       .set("Authorization", constants.token)
       .end((err, res) => {
-        // res.should.have.status(200);
+        res.should.have.status(200);
         // console.log(res.body);
         res.body.success.should.be.eql(false);
         res.body.message.should.be.eql(`Unknown country: ${incorrectCountryCode}`);
@@ -72,7 +72,7 @@ describe("API endpoint /api/formatPhoneNumber", () => {
       .get("/api/formatphonenumber?number=431023984&country_code=AU")
       .set("Authorization", constants.token)
       .end((err, res) => {
-        // res.should.have.status(200);
+        res.should.have.status(200);
         // console.log(res.body);
         res.body.success.should.be.eql(true);
         res.body.formatted_number.should.be.eql("+61 431 023 984");
@@ -86,7 +86,7 @@ describe("API endpoint /api/formatPhoneNumber", () => {
       .get("/api/formatphonenumber?number=5127364514&country_code=US")
       .set("Authorization", constants.token)
       .end((err, res) => {
-        // res.should.have.status(200);
+        res.should.have.status(200);
         // console.log(res.body);
         res.body.success.should.be.eql(true);
         res.body.formatted_number.should.be.eql("+1 512 736 4514");
